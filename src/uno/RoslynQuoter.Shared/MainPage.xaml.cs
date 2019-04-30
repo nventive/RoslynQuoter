@@ -33,8 +33,6 @@ namespace RoslynQuoter
 		{
 			this.InitializeComponent();
 
-			buildVersion = $"Version: {this.GetType().GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "Unkown"}";
-
 			_kinds = new[] {
 				NodeKind.CompilationUnit,
 				NodeKind.Statement,
