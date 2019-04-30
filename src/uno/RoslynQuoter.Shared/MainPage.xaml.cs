@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -25,8 +26,8 @@ namespace RoslynQuoter
 	/// </summary>
 	public sealed partial class MainPage : Page
 	{
-		private readonly NodeKind[] _kinds;
-		public string buildVersion;
+        private const string SDKResourcePrefix = "mono_sdk";
+        private readonly NodeKind[] _kinds;
 
 		public MainPage()
 		{
@@ -148,6 +149,8 @@ namespace RoslynQuoter
 				}
 				else
 				{
+                    ExtractSDK();
+
 					var quoter = new Quoter
 					{
 						OpenParenthesisOnNewLine = openCurlyOnNewLine,
@@ -170,6 +173,36 @@ namespace RoslynQuoter
 			}
 
 			return responseText;
+		}
+
+        [Conditional("__WASM__")]
+        private void ExtractSDK()
+        {
+            var sdkFiles = this.GetType().Assembly.GetManifestResourceNames().Where(f => f.Contains(SDKResourcePrefix));
+
+            foreach(var sdkFile in sdkFiles)
+            {
+                var fileNameStart = sdkFile.IndexOf(SDKResourcePrefix) + (SDKResourcePrefix + ".").Length;
+                var outputFile = sdkFile.Substring(fileNameStart);
+
+                if (!File.Exists(outputFile))
+                {
+                    using (var s = this.GetType().Assembly.GetManifestResourceStream(sdkFile))
+                    {
+                        Console.WriteLine($"Writing {outputFile}");
+
+                        using (var output = File.OpenWrite(outputFile))
+                        {
+                            s.CopyTo(output);
+                        }
+                    }
+                }
+            }
+        }
+
+        private async void OnForkMe(object sender, TappedRoutedEventArgs e)
+		{
+			await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/nventive/Uno.RoslynQuoter"));
 		}
 	}
 }

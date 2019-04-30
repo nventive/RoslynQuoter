@@ -1,37 +1,16 @@
 ﻿<linker>
-	<assembly fullname="Microsoft.CodeAnalysis">
-		<type fullname="*" />
-	</assembly>
-	<assembly fullname="Microsoft.CodeAnalysis.CSharp">
-		<type fullname="*" />
-	</assembly>
-	<assembly fullname="System.ComponentModel.Composition">
-		<type fullname="*" />
-	</assembly>
-	<assembly fullname="Microsoft.CodeAnalysis.Scripting">
-		<type fullname="*" />
-	</assembly>
-	<assembly fullname="mscorlib">
-		<type fullname="*" />
-	</assembly>
-	<assembly fullname="System">
-		<type fullname="*" />
-	</assembly>
-	<assembly fullname="System.Runtime">
-		<type fullname="*" />
-	</assembly>
-	<assembly fullname="System.Runtime.Extensions">
-		<type fullname="*" />
-	</assembly>
-	<assembly fullname="System.Collections">
-		<type fullname="*" />
-	</assembly>
-	<assembly fullname="System.Core">
-		<type fullname="*" />
-	</assembly>
-	<assembly fullname="Uno.UI">
-		<type fullname="*" />
-	</assembly>
+	<assembly fullname="Microsoft.CodeAnalysis"/>
+	<assembly fullname="Microsoft.CodeAnalysis.CSharp"/>
+	<assembly fullname="System.ComponentModel.Composition"/>
+	<assembly fullname="Microsoft.CodeAnalysis.Scripting"/>
+	<assembly fullname="mscorlib"/>
+	<assembly fullname="System"/>
+	<assembly fullname="System.Runtime"/>
+	<assembly fullname="System.Runtime.Extensions"/>
+	<assembly fullname="System.Collections"/>
+	<assembly fullname="System.Core"/>
+	<assembly fullname="Uno.UI"/>
+    
 	<assembly fullname="System.Core">
 		<!-- This is required by JSon.NET and any expression.Compile caller -->
 		<type fullname="System.Linq.Expressions*" />

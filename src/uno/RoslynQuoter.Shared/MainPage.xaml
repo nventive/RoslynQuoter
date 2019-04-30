@@ -4,152 +4,86 @@
 	  xmlns:wasm="http://uno/wasm"
 	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	  xmlns:local="using:RoslynQuoter"
+	  xmlns:banner="using:Uno.UI.Sample.Banner"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	  mc:Ignorable="xamarin wasm">
 
-	<Page.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="UnoPlatformShell.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>
-	</Page.Resources>
 
-	<Grid>
+    <banner:BannerControl
+            LinkToUnoPlatformApp="https://github.com/nventive/Uno.RoslynQuoter"
+            LinkToOriginalApp="https://github.com/KirillOsenkov/RoslynQuoter"
+            AppName="Roslyn Quoter"
+            AppAuthor="Kirill Osenkov">
 
-		<!-- UnoPlatformShell -->
-		<local:UnoPlatformShell AppName="Roslyn Quoter App"
-								AppAuthor="Kirill Osenkov"
-								LinkToOriginalApp="https://github.com/KirillOsenkov/RoslynQuoter"
-								LinkToAppAuthor="https://github.com/KirillOsenkov"
-								LinkToUnoPlatformApp="https://github.com/nventive/Uno.RoslynQuoter"
-								VersionNumber="buildVersion">
+        <banner:BannerControl.AboutContent>
+            This application is running the Roslyn Quoter tool locally on your machine.
+        </banner:BannerControl.AboutContent>
 
-			<!-- About Content -->
-			<local:UnoPlatformShell.AboutContent>
-				<StackPanel>
+        <Grid>
+            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+			  Margin="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <TextBox AcceptsReturn="true"
+					 Grid.Row="1"
+					 ScrollViewer.VerticalScrollBarVisibility="Auto"
+					 x:Name="inputCode"
+					 FontFamily="Courier New"
+					 PlaceholderText="Input some C# code"
+					 TextChanged="OnCodeChanged"
+					 Margin="0,0,10,10" />
+                <StackPanel Grid.Row="2">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Content="Generate"
+							Click="OnGenerateCode"
+							HorizontalAlignment="Left"
+							Margin="0,0,0,0"
+							VerticalAlignment="Center" />
+                        <Button Content="Generate LINQPad File"
+							Click="OnGenerateLinqPadCode"
+							HorizontalAlignment="Left"
+							Margin="0,0,0,0"
+							VerticalAlignment="Center" />
+                    </StackPanel>
+                    <ComboBox x:Name="comboParseAs"
+						  Header="Parse as:">
+                    </ComboBox>
+                    <CheckBox x:Name="checkBoxOpenParenthesis"
+						  Content="Open parenthesis on a new line" />
+                    <CheckBox x:Name="checkBoxCloseParenthesis"
+						  Content="Closing parenthesis on a new line " />
+                    <CheckBox x:Name="checkBoxPreserveWhiteSpace"
+						  Content="Preserve original whitespace " />
+                    <CheckBox x:Name="checkBoxKeepRedundant"
+						  Content="Keep redundant API calls " />
+                    <CheckBox x:Name="checkBoxNoSyntaxFactory"
+						  Content="Do not require 'using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;' " />
+                </StackPanel>
+                <TextBox x:Name="result"
+					 Grid.Column="1"
+					 Grid.Row="1"
+					 Grid.RowSpan="3"
+					 AcceptsReturn="True"
+					 FontFamily="Courier New"
+					 Grid.ColumnSpan="2" />
+                <TextBlock x:Name="buildVersion" Grid.Row="4" FontSize="10" Foreground="Gray" Text="Unknown" />
+            </Grid>
 
-					<!-- About Content Line 1 -->
-					<TextBlock TextWrapping="Wrap"
-							   Foreground="{StaticResource Color02Brush}"
-							   FontStyle="Italic"
-							   FontSize="14">
-						
-						This application is running 
-						<Bold>
-							entirely locally
-						</Bold> 
-						on your machine, no code is being sent out to the wire.
-					</TextBlock>
-
-					<!-- About Content Line 2 -->
-					<TextBlock TextWrapping="Wrap"
-							   Foreground="{StaticResource Color02Brush}"
-							   FontStyle="Italic"
-							   FontSize="12"
-							   Margin="0,16,0,0">
-					
-						The Mono runtime is using the interpreted mode (which is currently about 
-					
-						<!-- Link to WASM Benchmark -->
-						<Hyperlink NavigateUri="https://github.com/stefan-schweiger/dotWasmBenchmark"
-								   Foreground="{StaticResource Color02Brush}">
-							<Bold>
-								<Underline>
-									50x slower than it should be
-								</Underline>
-							</Bold>
-						</Hyperlink>
-						). For a better experience run it in Microsoft Edge or Mozilla Firefox.
-					</TextBlock>
-				</StackPanel>
-			</local:UnoPlatformShell.AboutContent>
-
-			<!-- App Content -->
-			<local:UnoPlatformShell.AppContent>
-
-				<Grid Background="{StaticResource Color02Brush}"
-					  Margin="15"
-					  Grid.Row="1">
-
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="*" />
-					</Grid.ColumnDefinitions>
-
-					<!-- Left Side -->
-					<Grid Grid.Column="0">
-						<Grid.RowDefinitions>
-							<RowDefinition Height="*" />
-							<RowDefinition Height="auto" />
-						</Grid.RowDefinitions>
-
-						<!-- C# Input -->
-						<TextBox x:Name="inputCode"
-								 PlaceholderText="Input some C# code"
-								 TextChanged="OnCodeChanged"
-								 AcceptsReturn="true"
-								 ScrollViewer.VerticalScrollBarVisibility="Auto"
-								 VerticalAlignment="Stretch"
-								 Margin="0,0,16,16"
-								 Grid.Row="0" />
-
-						<StackPanel Grid.Row="1">
-							<StackPanel Orientation="Horizontal"
-										Spacing="16">
-
-								<!-- Generate Button -->
-								<Button Content="Generate"
-										Background="{StaticResource Color01Brush}"
-										Foreground="{StaticResource Color02Brush}"
-										Click="OnGenerateCode"
-										VerticalAlignment="Center" />
-
-								<!-- Generate LINQPad File Button -->
-								<Button Content="Generate LINQPad File"
-										Background="{StaticResource Color01Brush}"
-										Foreground="{StaticResource Color02Brush}"
-										Click="OnGenerateLinqPadCode"
-										VerticalAlignment="Center" />
-							</StackPanel>
-
-							<!-- Parse as ComboBox -->
-							<ComboBox x:Name="comboParseAs"
-									  Header="Parse as:"
-									  Margin="0,16,0,0" />
-
-							<!-- Open parenthesis CheckBox -->
-							<CheckBox x:Name="checkBoxOpenParenthesis"
-									  Content="Open parenthesis on a new line"
-									  Margin="0,16,0,0" />
-
-							<!-- Close Parenthesis CheckBox -->
-							<CheckBox x:Name="checkBoxCloseParenthesis"
-									  Content="Closing parenthesis on a new line " />
-
-							<!-- Preserve white space CheckBox -->
-							<CheckBox x:Name="checkBoxPreserveWhiteSpace"
-									  Content="Preserve original whitespace " />
-
-							<!-- BoxKeep Redundant CheckBox -->
-							<CheckBox x:Name="checkBoxKeepRedundant"
-									  Content="Keep redundant API calls " />
-
-							<!-- NoSyntaxFactory checkBox -->
-							<CheckBox x:Name="checkBoxNoSyntaxFactory"
-									  Content="Do not require 'using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;' " />
-						</StackPanel>
-					</Grid>
-
-					<!-- Result (right side) -->
-					<TextBox x:Name="result"
-							 FontFamily="Courier New"
-							 AcceptsReturn="True"
-							 Grid.Column="1"
-							 Grid.Row="0"
-							 Grid.RowSpan="4" />
-				</Grid>
-			</local:UnoPlatformShell.AppContent>
-		</local:UnoPlatformShell>
-	</Grid>
+            <Image Source="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
+				Stretch="None"
+				VerticalAlignment="Top"
+				HorizontalAlignment="Right"
+				Tapped="OnForkMe" />
+        </Grid>
+    </banner:BannerControl>
 </Page>
