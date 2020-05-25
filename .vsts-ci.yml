@@ -1,44 +1,67 @@
-phases:
-- phase: VS_Latest
+jobs:
+- job: VS_Latest
+  container: unoplatform/wasm-build:2.0
+
+  pool:
+    vmImage: 'ubuntu-latest'
+
   variables:
-    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
-    NUGET_HTTP_CACHE_PATH: $(Agent.WorkFolder)\.nuget-http-cache
     SourceLinkEnabled: false
+    DotnetRuntimePath: /usr/share/dotnet
 
   steps:
-  - task: GitVersion@3
-    inputs:
-      updateAssemblyInfo: false   
-      
-  - task: NuGetToolInstaller@0
-    inputs:
-        versionSpec: 4.7.0
-        checkLatest: false
 
-  - task: NuGetCommand@2
+  - task: UseDotNet@2
+    displayName: 'Use .Net Core runtime 2.2.x'
     inputs:
-      command: restore
-      solution: Quoter.sln
-      selectOrConfig: select
-      includeNuGetOrg: true
-      verbosityRestore: Normal
+      packageType: runtime
+      version: 2.2.x
+      installationPath: '$(DotnetRuntimePath)'
 
-  - task: MSBuild@1
+  - task: nventiveCanaryUpdater@5
+    displayName: 'Canary Update'
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/canaries')
     inputs:
       solution: Quoter.sln
-      msbuildLocationMethod: version
-      msbuildVersion: latest
-      msbuildArchitecture: x86
-      msbuildArguments: /r /p:Configuration=Release "/p:PackageVersion=%GITVERSION_FullSemVer%" "/p:InformationalVersion=%GITVERSION_InformationalVersion%" /detailedsummary
-      clean: false
-      maximumCpuCount: true
-      restoreNugetPackages: false
-      logProjectEvents: false
-      createLogFile: false
+      branchToMerge: uno
+      summaryFile: '$(Build.ArtifactStagingDirectory)/Canary.md'
+      resultFile: '$(Build.ArtifactStagingDirectory)/result.json'
+      nugetUpdaterVersion: 2.0.6
+      packageAuthor: nventive
+  
+  - task: UseDotNet@2
+    displayName: 'Use .Net Core runtime 2.1.0'
+    inputs:
+      packageType: runtime
+      version: 2.1.0
+      installationPath: '$(DotnetRuntimePath)'
+
+  - task: GitVersion@5
+    inputs:
+      useConfigFile: true
+      configFilePath: gitversion.yml
+
+  - bash: |
+      cd ~
+      git clone https://github.com/emscripten-core/emsdk
+      cd emsdk
+      ./emsdk install sdk-1.39.11
+      ./emsdk activate sdk-1.39.11
+
+    displayName: 'Setup Emscripten'
+
+  - script: |
+      source ~/emsdk/emsdk_env.sh
+      cd $(build.sourcesdirectory)
+      msbuild /r /p:Configuration=Release $(build.sourcesdirectory)/src/uno/RoslynQuoter.Wasm/RoslynQuoter.Wasm.csproj "/p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION" 
+
+    env:
+      GITVERSION_FullSemVer: $(GITVERSION_FullSemVer)
+    displayName: 'Build Calculator'
   
   - task: PublishBuildArtifacts@1
     displayName: Publish Package Artifacts
     inputs:
-      pathToPublish: .\src\uno\RoslynQuoter.Wasm\bin\Release\netstandard2.0\dist
+      pathToPublish: $(build.sourcesdirectory)/src/uno/RoslynQuoter.Wasm/bin/Release/netstandard2.0/dist
       artifactType: container
       artifactName: RoslynQuoter-Wasm
