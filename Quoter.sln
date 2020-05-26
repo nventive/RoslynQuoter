@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.128
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quoter", "src\Quoter\Quoter.csproj", "{927AB47F-479C-423A-B21F-5DEC48533E1D}"
 EndProject
@@ -21,6 +21,7 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\uno\RoslynQuoter.Shared\RoslynQuoter.Shared.projitems*{20f64aa7-d240-49d8-bc35-578e322c7279}*SharedItemsImports = 4
 		src\uno\RoslynQuoter.Shared\RoslynQuoter.Shared.projitems*{6279c845-92f8-4333-ab99-3d213163593c}*SharedItemsImports = 13
+		src\uno\RoslynQuoter.Shared\RoslynQuoter.Shared.projitems*{a706d15c-b407-42a2-b6e3-b6f88ba24e7e}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
