@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using RoslynQuoter;
 using Xunit;
 
 public class Tests
@@ -567,12 +568,19 @@ class C { }");
 }");
     }
 
+    [Fact]
+    public void TestIssue49()
+    {
+        Test(@"if () {}", "Parse error. Have you selected the right Parse As context?", nodeKind: NodeKind.MemberDeclaration);
+    }
+
     private void Test(
         string sourceText,
         string expected,
         bool useDefaultFormatting = true,
         bool removeRedundantModifyingCalls = true,
-        bool shortenCodeWithUsingStatic = false)
+        bool shortenCodeWithUsingStatic = false,
+        NodeKind nodeKind = NodeKind.CompilationUnit)
     {
         var quoter = new Quoter
         {
@@ -580,7 +588,7 @@ class C { }");
             RemoveRedundantModifyingCalls = removeRedundantModifyingCalls,
             ShortenCodeWithUsingStatic = shortenCodeWithUsingStatic
         };
-        var actual = quoter.QuoteText(sourceText);
+        var actual = quoter.QuoteText(sourceText, nodeKind);
         Assert.Equal(expected, actual);
 
         Test(sourceText);
